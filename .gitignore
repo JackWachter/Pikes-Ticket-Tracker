@@ -1,0 +1,4 @@
+.env
+.pikes_resale_state.json
+__pycache__/
+*.pyc
