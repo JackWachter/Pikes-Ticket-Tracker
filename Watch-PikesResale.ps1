@@ -248,11 +248,17 @@ function Find-ResaleMatches {
     }
 
     foreach ($ticket in $targetTickets) {
-        $listings = @(Get-ResaleListingsForTicket `
-            -EventId $metadata.EventId `
-            -EventDateId $metadata.EventDateId `
-            -Ticket $ticket `
-            -ResaleUrl $ResaleUrl)
+        try {
+            $listings = @(Get-ResaleListingsForTicket `
+                -EventId $metadata.EventId `
+                -EventDateId $metadata.EventDateId `
+                -Ticket $ticket `
+                -ResaleUrl $ResaleUrl)
+        }
+        catch {
+            Write-Warning "Resale API check failed for '$($ticket.name)': $_"
+            continue
+        }
 
         if ($ShowDebug) {
             Write-Host "Debug: $($ticket.name) -> $($listings.Count) resale listing(s)."
@@ -435,7 +441,7 @@ while ($true) {
     }
     catch {
         $now = Get-Date -Format "yyyy-MM-dd HH:mm:ss zzz"
-        Write-Error "[$now] Check failed: $_"
+        Write-Warning "[$now] Check failed: $_"
     }
 
     if ($Once) {
